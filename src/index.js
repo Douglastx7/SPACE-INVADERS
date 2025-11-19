@@ -1,10 +1,23 @@
 import Grid from "./classes/Grid.js";
-import Invader from "./classes/Invader.js";
 import Obstacle from "./classes/Obstacle.js";
 import Particle from "./classes/Particle.js";
 import Player from "./classes/Player.js";
-import Projectile from "./classes/Projectile.js";
-import { GameState } from "./utils/constants.js";
+import SoundEffects from "./classes/SoundEffects.js";
+import Star from "./classes/Star.js";
+import { GameState, NUMBER_STARS } from "./utils/constants.js";
+
+const soundEffects = new SoundEffects();
+
+const startScreen = document.querySelector(".start-screen");
+const gameOverScreen = document.querySelector(".game-over");
+const scoreUi = document.querySelector(".score-ui");
+const scoreElement = scoreUi.querySelector(".score > span");
+const levelElement = scoreUi.querySelector(".level > span");
+const highElement = scoreUi.querySelector(".high > span");
+const buttonPlay = document.querySelector(".button-play");
+const buttonRestart = document.querySelector(".button-restart");
+
+gameOverScreen.remove();
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
@@ -14,9 +27,27 @@ canvas.height = innerHeight;
 
 ctx.imageSmoothingEnabled = false;
 
-let currentState = GameState.PLAYING;
+let currentState = GameState.START;
+
+// //////////////////  BANCO DE DADOS ///////////////////
+
+const gameData = {
+    score: 0,
+    level: 1,
+    height: 0,
+}
+
+const showGameData = () => {
+    scoreElement.textContent = gameData.score
+    levelElement.textContent = gameData.level
+    highElement.textContent = gameData.height
+}
+
+// /////////////////////////////////////////////////////
 
 const player = new Player(canvas.width,canvas.height);
+
+const stars = [];
 const grid = new Grid(3, 10);
 const playerProjectiles = [];
 const invadersProjectiles = [];
@@ -46,6 +77,27 @@ const keys = {
         released: true
     }
 }
+
+const incrementScore = (value) => {
+  gameData.score += value;
+
+  if (gameData.score > gameData.height) {
+    gameData.height = gameData.score;
+  }
+};
+
+const generateStars = () => {
+    for (let i = 0; i < NUMBER_STARS; i += 1) {
+        stars.push(new Star(canvas.width, canvas.height));
+    }
+};
+
+const drawStars = () => {
+    stars.forEach((star) => {
+        star.draw(ctx);
+        star.update();
+    });
+};
 
 const drawObstacles = () => {
     obstacles.forEach(obstacle => obstacle.draw(ctx));
@@ -106,7 +158,7 @@ const checkShootInvaders = () => {
     grid.invaders.forEach((invader, invaderIndex) => {
        playerProjectiles.some((projectile, projectileIndex) => {
           if (invader.hit(projectile)) {
-
+            soundEffects.playHitSound();
             createExplosion(
                 {
                     x: invader.position.x + invader.width / 2,
@@ -115,6 +167,9 @@ const checkShootInvaders = () => {
                 10,
                 "#941CFF"
             );
+
+            // INCREMENTAR O SCORE
+            incrementScore(10);
 
             grid.invaders.splice(invaderIndex, 1);
             playerProjectiles.splice(projectileIndex, 1);
@@ -126,6 +181,7 @@ const checkShootInvaders = () => {
 const checkShootPlayer = () => {
     invadersProjectiles.some((projectile, i) => {
         if (player.hit(projectile)) {
+            soundEffects.playExplosionSound();
             invadersProjectiles.splice(i, 1);
             gameOver();
         }
@@ -152,12 +208,20 @@ const checkShootObstacles = () => {
 
 const spawnGrid = () => {
     if (grid.invaders.length === 0) {
+
+        soundEffects.playNextLevelSound();
+
         grid.rows = Math.round(Math.random() * 9 + 1);
         grid.cols = Math.round(Math.random() * 9 + 1);
         grid.restart();
+
+        gameData.level += 1;
     }
 };
 
+
+// ///////////////////////////// GAME OVER ////////////////////////////////////////////////
+// ///////////////////////////// GAME OVER ////////////////////////////////////////////////
 const gameOver = () => {
      createExplosion(
         {
@@ -186,6 +250,7 @@ const gameOver = () => {
     );
     currentState = GameState.GAME_OVER;
     player.alive = false;
+    document.body.append(gameOverScreen);
 };
 
 
@@ -200,7 +265,10 @@ const gameOver = () => {
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    drawStars();
+
     if (currentState == GameState.PLAYING) {
+        showGameData();
         spawnGrid();
 
         drawProjectiles();
@@ -225,6 +293,7 @@ const gameLoop = () => {
         )
 
         if (keys.shoot.pressed && keys.shoot.released) {
+            soundEffects.playShootSound();
             player.shoot(playerProjectiles);
             keys.shoot.released = false;
         }
@@ -296,12 +365,37 @@ addEventListener("keyup", (event) => {
         }
 });
 
-setInterval(() => {
-    const invader = grid.getRandomInvader();
 
-    if (invader) {
-        invader.shoot(invadersProjectiles);
-    }
-}, 1000);
+buttonPlay.addEventListener("click", () => {
+    startScreen.remove();
+    scoreUi.style.display = "block";
+    currentState = GameState.PLAYING;
 
+    setInterval(() => {
+        const invader = grid.getRandomInvader();
+
+        if (invader) {
+            invader.shoot(invadersProjectiles);
+        }
+    }, 1000);
+});
+
+
+buttonRestart.addEventListener("click", () => {
+ currentState = GameState.PLAYING;
+ player.alive = true;
+
+ grid.invaders.length = 0;
+ grid.invadersVelocity = 1;
+
+ invadersProjectiles.length = 0;
+
+   gameData.score = 0;
+   gameData.level = 0;
+
+ gameOverScreen.remove();
+});
+
+
+generateStars();
 gameLoop();
