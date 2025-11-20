@@ -14,6 +14,7 @@ const scoreUi = document.querySelector(".score-ui");
 const scoreElement = scoreUi.querySelector(".score > span");
 const levelElement = scoreUi.querySelector(".level > span");
 const highElement = scoreUi.querySelector(".high > span");
+const goldElement = scoreUi.querySelector(".gold > span");
 const buttonPlay = document.querySelector(".button-play");
 const buttonRestart = document.querySelector(".button-restart");
 
@@ -31,16 +32,26 @@ let currentState = GameState.START;
 
 // //////////////////  BANCO DE DADOS ///////////////////
 
+let gameDataHeightLocalStore = localStorage.getItem('gameData-height');
+
+let gameDataGoldLocalStore = localStorage.getItem('gameData-gold');
+
+if (gameDataGoldLocalStore > 0) {
+    gameDataGoldLocalStore = Number(localStorage.getItem('gameData-gold')).toFixed(2);
+}
+
 const gameData = {
     score: 0,
     level: 1,
-    height: 0,
+    height: gameDataHeightLocalStore,
+    gold: Number(gameDataGoldLocalStore),
 }
 
 const showGameData = () => {
     scoreElement.textContent = gameData.score
     levelElement.textContent = gameData.level
     highElement.textContent = gameData.height
+    goldElement.textContent = gameData.gold.toFixed(2).replace(".",",");
 }
 
 // /////////////////////////////////////////////////////
@@ -83,8 +94,17 @@ const incrementScore = (value) => {
 
   if (gameData.score > gameData.height) {
     gameData.height = gameData.score;
+
+    localStorage.setItem('gameData-height',gameData.height);
   }
 };
+
+
+const incremetGold = (valueGold) => {
+    
+    gameData.gold += valueGold;
+    localStorage.setItem('gameData-gold',gameData.gold);
+}
 
 const generateStars = () => {
     for (let i = 0; i < NUMBER_STARS; i += 1) {
@@ -170,6 +190,9 @@ const checkShootInvaders = () => {
 
             // INCREMENTAR O SCORE
             incrementScore(10);
+
+            // INCREMENTAR O GOLD
+            incremetGold(0.25);
 
             grid.invaders.splice(invaderIndex, 1);
             playerProjectiles.splice(projectileIndex, 1);

@@ -77,8 +77,12 @@ canvas {
 .score-ui > div {
     display: flex;
     justify-content: space-between;
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
+}
+
+.gold-number {
+    color: gold;
 }
 
 @keyframes zoom {
