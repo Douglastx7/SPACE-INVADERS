@@ -26,9 +26,29 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+
 ctx.imageSmoothingEnabled = false;
 
 let currentState = GameState.START;
+
+
+// ////////////////// RESPONSIVIDADE //////////////////////
+
+if (canvas.width <= 600) {
+    // alert("asdfasdf")
+
+    const scoreUiResponsive = document.querySelector(".score-ui");
+    const startScreenH1 = document.querySelector(".h1");
+    startScreenH1.style.fontSize = "1rem" 
+    scoreUiResponsive.style.fontSize = "0.4rem"
+
+
+    console.log(canvas.width)
+}
+
+
+
+// ////////////////////////////////////////////////////////
 
 // //////////////////  BANCO DE DADOS ///////////////////
 
