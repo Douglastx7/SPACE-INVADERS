@@ -40,7 +40,7 @@ if (canvas.width <= 600) {
     const scoreUiResponsive = document.querySelector(".score-ui");
     const startScreenH1 = document.querySelector(".h1");
     startScreenH1.style.fontSize = "1rem" 
-    scoreUiResponsive.style.fontSize = "0.4rem"
+    scoreUiResponsive.style.fontSize = "0.5rem"
 
 
     console.log(canvas.width)
