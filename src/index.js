@@ -1,4 +1,5 @@
 import Grid from "./classes/Grid.js";
+import Invader from "./classes/Invader.js";
 import Obstacle from "./classes/Obstacle.js";
 import Particle from "./classes/Particle.js";
 import Player from "./classes/Player.js";
@@ -34,8 +35,7 @@ let currentState = GameState.START;
 
 // ////////////////// RESPONSIVIDADE //////////////////////
 
-if (canvas.width <= 600) {
-    // alert("asdfasdf")
+if (canvas.width <= 800) {
 
     const scoreUiResponsive = document.querySelector(".score-ui");
     const startScreenH1 = document.querySelector(".h1");
@@ -43,7 +43,8 @@ if (canvas.width <= 600) {
     scoreUiResponsive.style.fontSize = "0.5rem"
 
 
-    console.log(canvas.width)
+
+
 }
 
 

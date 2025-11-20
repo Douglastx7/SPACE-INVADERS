@@ -1,14 +1,14 @@
 import { PATH_INVADER_IMAGE } from "../utils/constants.js";
 import Projectile from "./Projectile.js"
 
+const canvas = document.querySelector("canvas");
+
  class Invader {
     constructor(position, velocity) {
       this.position = position;
-      this.width = 50 * 0.8;
-      this.height = 37 * 0.8;
+      this.width = canvas.width <= 800 ? 50 * 0.4 : 50 * 0.8;
+      this.height = canvas.width<= 800 ? 37 * 0.4 : 37 * 0.8;
       this.velocity = velocity;
-
-      
 
       this.image = this.getImage(PATH_INVADER_IMAGE);
 

@@ -1,11 +1,13 @@
 import { INITIAL_FRAMES, PATH_ENGINE_IMAGE, PATH_ENGINE_SPRITES, PATH_SPACESHIP_IMAGE} from "../utils/constants.js";
 import Projectile from "./Projectile.js";
 
+const canvas = document.querySelector("canvas");
+
  class Player {
     constructor(canvasWidth, canvasHeight) {
       this.alive = true;  
-      this.width = 48 * 2;
-      this.height = 48 * 2;
+      this.width = canvas.width <= 800? 48 * 2: 48 * 2;
+      this.height = canvas.width <= 800? 48 * 2: 48 * 2;
       this.velocity = 6;
 
       this.position = {
